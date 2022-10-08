@@ -65,17 +65,44 @@
           url: "/mars",
           data: {},
           success: function (response) {
-            alert(response["msg"]);
+            let orders = response.orders;
+            let name, addr, size;
+            let temp_html = "";
+            for (let i = 0; i < orders.length; i++) {
+              name = orders[i]["name"];
+              addr = orders[i]["addr"];
+              size = orders[i]["size"];
+
+              temp_html = `
+                <tr>
+                  <td>${name}</td>
+                  <td>${addr}</td>
+                  <td>${size}</td>
+                </tr>`;
+              $("table tbody").append(temp_html);
+
+              // console.log(orders[i], name, addr);
+            }
+            console.log(orders[0]["name"]);
           },
         });
       }
       function save_order() {
+        let name = $("#name").val();
+        let addr = $("#addr").val();
+        let size = $("#size").val();
+
         $.ajax({
           type: "POST",
           url: "/mars",
-          data: { sample_give: "데이터전송" },
+          data: {
+            name_give: name,
+            addr_give: addr,
+            size_give: size,
+          },
           success: function (response) {
             alert(response["msg"]);
+            window.location.reload();
           },
         });
       }
@@ -97,7 +124,7 @@
         </div>
         <div class="input-group mb-3">
           <span class="input-group-text">주소</span>
-          <input id="address" type="text" class="form-control" />
+          <input id="addr" type="text" class="form-control" />
         </div>
         <div class="input-group mb-3">
           <label class="input-group-text" for="size">평수</label>

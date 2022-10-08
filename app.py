@@ -1,5 +1,10 @@
+from pymongo import MongoClient
 from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
+
+client = MongoClient(
+    'mongodb+srv://genie:sparta@cluster0.blce7zu.mongodb.net/?retryWrites=true&w=majority')
+db = client.dbsparta
 
 
 @app.route('/')
@@ -9,14 +14,27 @@ def home():
 
 @app.route("/mars", methods=["POST"])
 def web_mars_post():
-    sample_receive = request.form['sample_give']
-    print(sample_receive)
-    return jsonify({'msg': 'POST 연결 완료!'})
+    name_receive = request.form['name_give']
+    addr_receive = request.form['addr_give']
+    size_receive = request.form['size_give']
+    # print(sample_receive)
+    doc = {
+        'name': name_receive,
+        'addr': addr_receive,
+        'size': size_receive
+    }
+
+    db.mars.insert_one(doc)
+
+    return jsonify({'msg': '주문이 완료되었습니다!'})
 
 
 @app.route("/mars", methods=["GET"])
 def web_mars_get():
-    return jsonify({'msg': 'GET 연결 완료!'})
+
+    orders = list(db.mars.find({}, {'_id': False}))
+
+    return jsonify({'orders': orders})
 
 
 if __name__ == '__main__':
